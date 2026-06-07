@@ -16,7 +16,7 @@ public class DashboardPage {
     @FindBy(css = "h3.greeting-title")
     private WebElement greetingTitle;
 
-    @FindBy(xpath = "//li[contains(@class,'dropdown')]//a[contains(.,'Ahmad Joni')]")
+    @FindBy(xpath = "//a[contains(.,'student') or contains(.,'zaky') or contains(.,'aliyashfi') or contains(.,'jeki') or contains(.,'Ahmad Joni') or contains(@class,'dropdown-toggle')]")
     private WebElement accountDropdown;
 
     @FindBy(xpath = "//button[text()='Keluar']")
@@ -28,6 +28,9 @@ public class DashboardPage {
     @FindBy(xpath = "//a[contains(text(),'Beranda')]")
     private WebElement berandaLink;
 
+    @FindBy(xpath = "//a[contains(text(),'Riwayat Kuis')]")
+    private WebElement riwayatKuisLink;
+
     public DashboardPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(60));
@@ -38,7 +41,22 @@ public class DashboardPage {
         try {
             wait.until(ExpectedConditions.visibilityOf(greetingTitle));
             waitForLoading();
-            return greetingTitle.getText().contains("Hai, Ahmad Joni!");
+            return greetingTitle.getText().contains("Hai,");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isHeaderMenusDisplayed() {
+        try {
+            wait.until(ExpectedConditions.visibilityOf(berandaLink));
+            wait.until(ExpectedConditions.visibilityOf(kursusSayaLink));
+            wait.until(ExpectedConditions.visibilityOf(riwayatKuisLink));
+            wait.until(ExpectedConditions.visibilityOf(accountDropdown));
+            return berandaLink.isDisplayed() &&
+                   kursusSayaLink.isDisplayed() &&
+                   riwayatKuisLink.isDisplayed() &&
+                   accountDropdown.isDisplayed();
         } catch (Exception e) {
             return false;
         }

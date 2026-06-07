@@ -35,13 +35,27 @@ public class LoginPage {
         waitForPageLoad();
     }
 
-    public void login(String email, String password) {
-        wait.until(ExpectedConditions.elementToBeClickable(emailInput));
+    public void enterEmail(String email) {
+        wait.until(ExpectedConditions.visibilityOf(emailInput));
         emailInput.clear();
         emailInput.sendKeys(email);
+    }
+
+    public void enterPassword(String password) {
+        wait.until(ExpectedConditions.visibilityOf(passwordInput));
         passwordInput.clear();
         passwordInput.sendKeys(password);
+    }
+
+    public void clickLogin() {
+        wait.until(ExpectedConditions.elementToBeClickable(loginButton));
         loginButton.click();
+    }
+
+    public void login(String email, String password) {
+        enterEmail(email);
+        enterPassword(password);
+        clickLogin();
     }
 
     public boolean isWelcomeTitleDisplayed() {

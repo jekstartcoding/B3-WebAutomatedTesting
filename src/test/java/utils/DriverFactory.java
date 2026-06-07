@@ -1,6 +1,5 @@
 package utils;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -11,11 +10,14 @@ public class DriverFactory {
 
     public static WebDriver getDriver() {
         if (driver.get() == null) {
-            WebDriverManager.chromedriver().setup();
+            // Use the cached ChromeDriver matching version 149.0.7827.54
+            System.setProperty("webdriver.chrome.driver", "C:\\Users\\Jeki\\.cache\\selenium\\chromedriver\\win64\\149.0.7827.54\\chromedriver.exe");
             
             ChromeOptions options = new ChromeOptions();
-            // Configure headless mode by default (recommended for CLI / automated runner environments)
-            String headlessProp = System.getProperty("headless", "true");
+            options.setBinary("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
+            
+            // Configure headless mode by default (false means it will display the browser visually)
+            String headlessProp = System.getProperty("headless", "false");
             if (Boolean.parseBoolean(headlessProp)) {
                 options.addArguments("--headless=new");
             }
