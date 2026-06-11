@@ -1,6 +1,7 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -16,7 +17,7 @@ public class DashboardPage {
     @FindBy(css = "h3.greeting-title")
     private WebElement greetingTitle;
 
-    @FindBy(xpath = "//a[contains(.,'student') or contains(.,'zaky') or contains(.,'aliyashfi') or contains(.,'jeki') or contains(.,'Ahmad Joni') or contains(@class,'dropdown-toggle')]")
+    @FindBy(xpath = "//a[contains(.,'student') or contains(.,'zaky') or contains(.,'aliyashfi') or contains(.,'jeki') or contains(.,'Ahmad Joni') or contains(.,'Amadeus') or contains(.,'amadeus') or contains(@class,'dropdown-toggle')]")
     private WebElement accountDropdown;
 
     @FindBy(xpath = "//button[text()='Keluar']")
@@ -79,6 +80,41 @@ public class DashboardPage {
         waitForLoading();
     }
 
+    public void performLogout() {
+        clickAccountDropdown();
+        clickLogoutButton();
+    }
+
+    public boolean isRedirectedToLoginPage() {
+        try {
+            // Halaman login JTKLearn ada di root URL (bukan /login)
+            // Setelah logout, user seharusnya tidak lagi berada di halaman dashboard
+            wait.until(driver -> !driver.getCurrentUrl().contains("dashboard"));
+            return !driver.getCurrentUrl().contains("dashboard");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void navigateToDashboardDirectly() {
+        driver.get("https://polban-space.cloudias79.com/jtk-learn/dashboard");
+        waitForLoading();
+    }
+
+    public boolean isSessionCleared() {
+        try {
+            // React SPA: setelah navigate ke /dashboard tanpa session,
+            // halaman kosong ditampilkan (navbar "My Account", konten tidak termuat).
+            // Verifikasi greeting pelajar TIDAK muncul = session sudah terhapus
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                    By.cssSelector("h3.greeting-title")
+            ));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void navigateToKursusSaya() {
         wait.until(ExpectedConditions.elementToBeClickable(kursusSayaLink));
         kursusSayaLink.click();
@@ -92,10 +128,13 @@ public class DashboardPage {
     }
 
     public void clickCourse(String courseName) {
-        WebElement courseCard = wait.until(ExpectedConditions.elementToBeClickable(
+        WebElement courseCard = wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//h6[text()='" + courseName + "']/ancestor::div[contains(@class,'card')]")
         ));
-        courseCard.click();
+        // Scroll ke elemen terlebih dahulu (kursus bisa berada jauh di bawah viewport)
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", courseCard);
+        // Gunakan JS click untuk menghindari ElementClickInterceptedException
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", courseCard);
         waitForLoading();
     }
 

@@ -24,6 +24,9 @@ public class CourseOverviewPage {
     @FindBy(xpath = "//button[text()='Tutup' or contains(text(),'Tutup')]")
     private WebElement tutupPopupButton;
 
+    @FindBy(xpath = "//*[contains(text(),'Silakan masukkan kode pendaftaran') or contains(@class,'alert') and contains(text(),'kode')]")
+    private WebElement errorPopupText;
+
     public CourseOverviewPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(60));
@@ -49,5 +52,24 @@ public class CourseOverviewPage {
     public void clickTutupPopup() {
         wait.until(ExpectedConditions.elementToBeClickable(tutupPopupButton));
         tutupPopupButton.click();
+    }
+
+    public String getErrorPopupText() {
+        wait.until(ExpectedConditions.visibilityOf(errorPopupText));
+        return errorPopupText.getText().trim();
+    }
+
+    public boolean isOnCourseOverviewPage(String expectedUrlFragment) {
+        try {
+            wait.until(driver -> driver.getCurrentUrl().contains(expectedUrlFragment));
+            return driver.getCurrentUrl().contains(expectedUrlFragment);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void navigateToCourseOverview(String courseUrl) {
+        driver.get(courseUrl);
+        wait.until(ExpectedConditions.visibilityOf(enrollmentKeyInput));
     }
 }

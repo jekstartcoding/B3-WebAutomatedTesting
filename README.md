@@ -12,6 +12,14 @@ Proyek ini dirancang secara kolaboratif sehingga beberapa pengembang/tester (Zak
 
 ---
 
+## 🚀 Fitur yang Diuji (Deus - Orang 3)
+1. **TC-FR-2.2 (Logout Pelajar Berhasil)**: Memverifikasi proses logout pelajar secara otomatis — mulai dari klik nama akun, klik Keluar, validasi redirect ke halaman login, penghapusan session, hingga memastikan dashboard tidak dapat diakses tanpa login ulang.
+2. **TC-FR-6.0.8 (Gagal Daftar Course - Enroll Key Kosong)**: Memvalidasi bahwa sistem menampilkan pesan error *"Silakan masukkan kode pendaftaran"* ketika field kode pendaftaran dibiarkan kosong dan tombol Daftar ditekan, serta memastikan user tetap berada di halaman Course Overview.
+
+> 📖 Lihat panduan lengkap menjalankan test Deus di [PANDUAN_DEUS.md](PANDUAN_DEUS.md)
+
+---
+
 ## 📂 Struktur Folder Proyek
 Struktur proyek disusun rapi menggunakan folder khusus per kontributor untuk mencegah konflik Git:
 
@@ -32,9 +40,12 @@ automation-testing/
         │   │
         │   ├── stepdefinitions/                 # Cucumber Step Definitions
         │   │   ├── Hooks.java                   # Setup, Teardown & Screenshot on Failure (Shared)
-        │   │   └── zaky/                        # Folder khusus Step Definitions milik Zaky
-        │   │       ├── TC_FR_1_2_LoginSteps.java
-        │   │       └── TC_FR_6_0_2_CourseRegistrationSteps.java
+        │   │   ├── zaky/                        # Folder khusus Step Definitions milik Zaky
+        │   │   │   ├── TC_FR_1_2_LoginSteps.java
+        │   │   │   └── TC_FR_6_0_2_CourseRegistrationSteps.java
+        │   │   └── deus/                        # Folder khusus Step Definitions milik Deus
+        │   │       ├── TC_FR_2_2_LogoutSteps.java
+        │   │       └── TC_FR_6_0_8_EnrollKeyEmptySteps.java
         │   │
         │   ├── runners/                         # Cucumber Test Runner
         │   │   └── TestRunner.java
@@ -44,9 +55,12 @@ automation-testing/
         │
         └── resources/
             └── features/                        # Gherkin Feature Files
-                └── zaky/                        # Folder khusus berkas .feature milik Zaky
-                    ├── TC_FR_1_2_Authentication.feature
-                    └── TC_FR_6_0_2_CourseRegistration.feature
+                ├── zaky/                        # Folder khusus berkas .feature milik Zaky
+                │   ├── TC_FR_1_2_Authentication.feature
+                │   └── TC_FR_6_0_2_CourseRegistration.feature
+                └── deus/                        # Folder khusus berkas .feature milik Deus
+                    ├── TC_FR_2_2_Logout.feature
+                    └── TC_FR_6_0_8_EnrollKeyEmpty.feature
 ```
 
 ---
@@ -63,11 +77,25 @@ mvn test
 mvn test -Dheadless=false
 ```
 
-### 2. Menjalankan Semua Test Case (Milik Zaky, Hasbi, & Deus) Sekaligus
-Ubah parameter `features` pada [TestRunner.java](file:///d:/Kampus/Semester%206/Software%20Testing/Praktik/Pertemuan%2014/Sample%20Project/automation-testing/src/test/java/runners/TestRunner.java) agar mengarah ke folder induk:
+### 2. Menjalankan Test Case Milik Deus
+Ubah parameter `features` pada [TestRunner.java](src/test/java/runners/TestRunner.java) agar mengarah ke folder `deus`:
 ```java
 @CucumberOptions(
-        features = "src/test/resources/features", // Tanpa subfolder /zaky
+        features = "src/test/resources/features/deus", // Arahkan ke folder deus
+        glue = "stepdefinitions",                       // Jangan diubah — agar Hooks & step Zaky terpanggil
+        plugin = { ... }
+)
+```
+```bash
+mvn test -Dheadless=false
+```
+> 📖 Panduan lengkap (prasyarat, troubleshooting, penjelasan assertion) ada di [PANDUAN_DEUS.md](PANDUAN_DEUS.md)
+
+### 3. Menjalankan Semua Test Case (Milik Zaky, Hasbi, & Deus) Sekaligus
+Ubah parameter `features` pada [TestRunner.java](src/test/java/runners/TestRunner.java) agar mengarah ke folder induk:
+```java
+@CucumberOptions(
+        features = "src/test/resources/features", // Tanpa subfolder
         glue = "stepdefinitions",                  // Tetap stepdefinitions agar Hooks.java terpanggil
         plugin = { ... }
 )

@@ -11,7 +11,7 @@ public class DriverFactory {
     public static WebDriver getDriver() {
         if (driver.get() == null) {
             // Use the cached ChromeDriver matching version 149.0.7827.54
-            System.setProperty("webdriver.chrome.driver", "C:\\Users\\Jeki\\.cache\\selenium\\chromedriver\\win64\\149.0.7827.54\\chromedriver.exe");
+            //System.setProperty("webdriver.chrome.driver", "C:\\Users\\Jeki\\.cache\\selenium\\chromedriver\\win64\\149.0.7827.54\\chromedriver.exe");
             
             ChromeOptions options = new ChromeOptions();
             options.setBinary("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
