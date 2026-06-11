@@ -16,8 +16,6 @@ Proyek ini dirancang secara kolaboratif sehingga beberapa pengembang/tester (Zak
 1. **TC-FR-2.2 (Logout Pelajar Berhasil)**: Memverifikasi proses logout pelajar secara otomatis — mulai dari klik nama akun, klik Keluar, validasi redirect ke halaman login, penghapusan session, hingga memastikan dashboard tidak dapat diakses tanpa login ulang.
 2. **TC-FR-6.0.8 (Gagal Daftar Course - Enroll Key Kosong)**: Memvalidasi bahwa sistem menampilkan pesan error *"Silakan masukkan kode pendaftaran"* ketika field kode pendaftaran dibiarkan kosong dan tombol Daftar ditekan, serta memastikan user tetap berada di halaman Course Overview.
 
-> 📖 Lihat panduan lengkap menjalankan test Deus di [PANDUAN_DEUS.md](PANDUAN_DEUS.md)
-
 ---
 
 ## 📂 Struktur Folder Proyek
