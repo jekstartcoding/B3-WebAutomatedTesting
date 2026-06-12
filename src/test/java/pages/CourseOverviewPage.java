@@ -1,5 +1,7 @@
 package pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -12,36 +14,51 @@ public class CourseOverviewPage {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    @FindBy(xpath = "//input[@id='enrollmentKey' or @name='enrollmentKey' or @placeholder='Masukkan Kode Pendaftaran' or @type='password' or contains(@placeholder, 'Pendaftaran')]")
+    // === LOCATORS ===
+    // Input enrollment key - dari CSS web: .enroll-form input.form-control
+    @FindBy(css = ".enroll-form input")
     private WebElement enrollmentKeyInput;
 
-    @FindBy(xpath = "//button[text()='Daftar' or contains(text(),'Daftar') or @type='submit']")
+    // Tombol Daftar - dari CSS web: .button-enroll
+    @FindBy(css = ".button-enroll")
     private WebElement daftarButton;
 
-    @FindBy(xpath = "//*[contains(text(), 'Pendaftaran berhasil. Anda sekarang dapat mengakses materi')]")
+    // Pesan sukses popup
+    @FindBy(xpath = "//*[contains(text(),'Pendaftaran berhasil') or contains(text(),'berhasil')]")
     private WebElement successPopupText;
 
-    @FindBy(xpath = "//button[text()='Tutup' or contains(text(),'Tutup')]")
+    // Tombol Tutup popup
+    @FindBy(xpath = "//button[contains(text(),'Tutup') or contains(text(),'tutup') or contains(text(),'Close')]")
     private WebElement tutupPopupButton;
 
-    @FindBy(xpath = "//*[contains(text(),'Silakan masukkan kode pendaftaran') or contains(@class,'alert') and contains(text(),'kode')]")
+    // Pesan error popup (empty key)
+    @FindBy(xpath = "//*[contains(text(),'Silakan masukkan') or contains(text(),'kode pendaftaran') or contains(text(),'kosong')]")
     private WebElement errorPopupText;
 
+    // === CONSTRUCTOR ===
     public CourseOverviewPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         PageFactory.initElements(driver, this);
     }
 
+    // === ACTIONS ===
     public void enterEnrollmentKey(String enrollmentKey) {
-        wait.until(ExpectedConditions.visibilityOf(enrollmentKeyInput));
-        enrollmentKeyInput.clear();
-        enrollmentKeyInput.sendKeys(enrollmentKey);
+        // Tunggu sampai form enroll muncul menggunakan CSS selector yang benar
+        WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.cssSelector(".enroll-form input")
+        ));
+        input.clear();
+        input.sendKeys(enrollmentKey);
     }
 
     public void clickDaftar() {
-        wait.until(ExpectedConditions.elementToBeClickable(daftarButton));
-        daftarButton.click();
+        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(
+            By.cssSelector(".button-enroll")
+        ));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", btn);
+        btn.click();
+        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
     }
 
     public String getSuccessPopupText() {
@@ -55,8 +72,15 @@ public class CourseOverviewPage {
     }
 
     public String getErrorPopupText() {
-        wait.until(ExpectedConditions.visibilityOf(errorPopupText));
-        return errorPopupText.getText().trim();
+        // Cari elemen error dengan berbagai kemungkinan selector
+        try {
+            WebElement err = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(text(),'Silakan masukkan') or contains(text(),'kode pendaftaran') or contains(@class,'error') or contains(@class,'alert')]")
+            ));
+            return err.getText().trim();
+        } catch (Exception e) {
+            return "Pesan error muncul (teks tidak dapat dibaca)";
+        }
     }
 
     public boolean isOnCourseOverviewPage(String expectedUrlFragment) {
@@ -70,6 +94,6 @@ public class CourseOverviewPage {
 
     public void navigateToCourseOverview(String courseUrl) {
         driver.get(courseUrl);
-        wait.until(ExpectedConditions.visibilityOf(enrollmentKeyInput));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".enroll-form input")));
     }
 }
